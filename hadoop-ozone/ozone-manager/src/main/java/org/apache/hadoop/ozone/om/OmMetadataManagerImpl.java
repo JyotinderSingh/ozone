@@ -821,6 +821,36 @@ public class OmMetadataManagerImpl implements OMMetadataManager {
           continue;
         }
 
+        if (omBucketInfo.isLink()) {
+          OmBucketInfo sourceBucket =
+              (OmBucketInfo) bucketTable.getIfExist(
+                  omBucketInfo.getSourceBucket());
+
+          BucketLayout sourceBucketLayout = sourceBucket.getBucketLayout();
+
+          // Replicate omBucketInfo into a new object, and set BucketLayout
+          // to match source bucket layout
+          OmBucketInfo.Builder builder=  new OmBucketInfo.Builder();
+          builder.setVolumeName(omBucketInfo.getVolumeName())
+              .setBucketName(omBucketInfo.getBucketName())
+              .setAcls(omBucketInfo.getAcls())
+              .setIsVersionEnabled(omBucketInfo.getIsVersionEnabled())
+              .setStorageType(omBucketInfo.getStorageType())
+              .setCreationTime(omBucketInfo.getCreationTime())
+              .setModificationTime(omBucketInfo.getModificationTime())
+              .setObjectID(omBucketInfo.getObjectID())
+              .setUpdateID(omBucketInfo.getUpdateID())
+              .setSourceVolume(omBucketInfo.getSourceVolume())
+              .setSourceBucket(omBucketInfo.getSourceBucket())
+              .setUsedBytes(omBucketInfo.getUsedBytes())
+              .setUsedNamespace(omBucketInfo.getUsedNamespace())
+              .setQuotaInBytes(omBucketInfo.getQuotaInBytes())
+              .setQuotaInNamespace(omBucketInfo.getQuotaInNamespace())
+              .setBucketLayout(sourceBucketLayout);
+
+          omBucketInfo = builder.build();
+        }
+
         // We should return only the keys, whose keys match with prefix and
         // the keys after the startBucket.
         if (key.startsWith(seekPrefix) && key.compareTo(startKey) >= 0) {
